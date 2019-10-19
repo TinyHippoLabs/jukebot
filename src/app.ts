@@ -1,6 +1,7 @@
 import { Client } from 'discord.js';
 import ytdl from 'ytdl-core';
-const TOKEN = 'NjM0Njg0NDg2NzY4MTMyMDk2.XanuVg.hDZkh8fH1jgrEPidyi_oaQgFQvU';
+
+require('dotenv').config();
 
 const client = new Client();
 
@@ -52,4 +53,4 @@ client.on('message', (msg) => {
   }
 });
 
-client.login(TOKEN);
+client.login(process.env.TOKEN);
