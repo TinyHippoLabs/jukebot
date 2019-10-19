@@ -1,0 +1,35 @@
+{
+    "name": "jukebot",
+    "description": "Simple Discord music bot.",
+    "main": "dist/app.js",
+    "version": "0.0.1",
+    "private": true,
+    "license": "",
+    "author": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Desocode/jukebot.git"
+    },
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "scripts": {
+        "start": "tsc && node dist/app.js",
+        "test": "mocha --exit test/*.test.js"
+    },
+    "dependencies": {
+        "discord.js": "^11.5.1",
+        "express": "^4.17.1",
+        "ffbinaries": "^1.1.4",
+        "ffmpeg": "0.0.4",
+        "node-opus": "^0.3.3",
+        "tslint": "^5.20.0",
+        "typescript": "^3.6.4",
+        "ytdl": "^0.13.1"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.1",
+        "mocha": "^6.1.4",
+        "supertest": "^4.0.2"
+    }
+}
