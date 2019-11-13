@@ -14,8 +14,10 @@
         "node": ">=8.0.0"
     },
     "scripts": {
-        "start": "tsc && node dist/app.js",
-        "test": "mocha --exit test/*.test.js"
+        "start": "node dist/app.js",
+        "test": "mocha --exit test/*.test.js",
+        "gcp-build": "tsc -p .",
+        "deploy": "gcloud app deploy"
     },
     "dependencies": {
         "discord.js": "^11.5.1",
@@ -26,6 +28,7 @@
         "node-opus": "^0.3.3",
         "tslint": "^5.20.0",
         "typescript": "^3.6.4",
+        "youtube-search": "^1.1.4",
         "ytdl": "^0.13.1"
     },
     "devDependencies": {
