@@ -15,6 +15,8 @@ const COMMAND_VOLUME = COMMAND_PREFIX + 'volume';
 
 let dispatcher: StreamDispatcher;
 
+process.on('unhandledRejection', console.error);
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}! Now even more powerful!`);
 });
@@ -37,27 +39,30 @@ client.on('message', (msg) => {
 
       // Only try to join the sender's voice channel if they are in one themselves
       if (msg.member.voiceChannel) {
-        msg.member.voiceChannel.join().then((connection) => {
-          if (query != null) {
-            search(query, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, (err, results) => {
-              if (err) {
-                msg.reply(err.message);
-                return;
-              }
-              if (results === undefined) {
-                msg.reply('No matching results found');
-                return;
-              }
-              const video = results[0];
-              msg.reply(`Trying to play "${video.title}"`);
-              dispatcher = connection.playStream(ytdl(video.link, { quality: 'highestaudio' }));
-              dispatcher.setVolume(0.5);
-              dispatcher.on('start', () => msg.channel.send(`Now Playing: ${video.title}`));
+        msg.member.voiceChannel
+          .join()
+          .then((connection) => {
+            if (query != null) {
+              search(query, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, (err, results) => {
+                if (err) {
+                  msg.reply(err.message);
+                  return;
+                }
+                if (results === undefined) {
+                  msg.reply('No matching results found');
+                  return;
+                }
+                const video = results[0];
+                msg.reply(`Trying to play "${video.title}"`);
+                dispatcher = connection.playStream(ytdl(video.link, { quality: 'highestaudio' }));
+                dispatcher.setVolume(0.5);
+                dispatcher.on('start', () => msg.channel.send(`Now Playing: ${video.title}`));
 
-              connection.on('disconnect', () => dispatcher.end());
-            });
-          } else msg.reply('Please give something for me to play.');
-        });
+                connection.on('disconnect', () => dispatcher.end());
+              });
+            } else msg.reply('Please give something for me to play.');
+          })
+          .catch((e) => msg.reply('Error: ' + e));
       } else {
         msg.reply('You need to join a voice channel first!');
       }
