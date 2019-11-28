@@ -1,19 +1,17 @@
-import { Client, DiscordAPIError, StreamDispatcher } from 'discord.js';
+import { Client, StreamDispatcher } from 'discord.js';
 import ytdl from 'ytdl-core';
 import search from 'youtube-search';
 
 require('dotenv').config();
 
 const client = new Client();
-const key = process.env.API_KEY;
 
 const COMMAND_PREFIX = '!';
-const COMMAND_JOIN = COMMAND_PREFIX + 'join';
+// const COMMAND_JOIN = COMMAND_PREFIX + 'join';
 const COMMAND_PLAY = COMMAND_PREFIX + 'play';
 const COMMAND_PAUSE = COMMAND_PREFIX + 'pause';
 const COMMAND_STOP = COMMAND_PREFIX + 'stop';
 const COMMAND_VOLUME = COMMAND_PREFIX + 'volume';
-const COMMAND_STRING_SPLIT_LIMIT = 2;
 
 let dispatcher: StreamDispatcher;
 
@@ -34,16 +32,20 @@ client.on('message', (msg) => {
 
   if (msg.content.startsWith(COMMAND_PLAY)) {
     const match = msg.content.match(new RegExp(`(${COMMAND_PLAY})(.*)`));
-    if (match.length > 0) {
+    if (match !== null && match.length > 0) {
       const query = match[2];
 
       // Only try to join the sender's voice channel if they are in one themselves
       if (msg.member.voiceChannel) {
         msg.member.voiceChannel.join().then((connection) => {
           if (query != null) {
-            search(query, { maxResults: 1, key: key }, (err, results) => {
+            search(query, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, (err, results) => {
               if (err) {
                 msg.reply(err.message);
+                return;
+              }
+              if (results === undefined) {
+                msg.reply('No matching results found');
                 return;
               }
               const video = results[0];
@@ -73,11 +75,11 @@ client.on('message', (msg) => {
 
   if (msg.content === COMMAND_VOLUME) {
     const match = msg.content.match(new RegExp(`(${COMMAND_VOLUME}) ([-.0-9]+)`));
-    if (match.length > 0) {
+    if (match !== null && match.length > 0) {
       const volume = parseFloat(match[2]);
       msg.reply(`Setting volume to ${volume}`);
       dispatcher.setVolume(volume);
     }
   }
 });
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);

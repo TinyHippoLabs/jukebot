@@ -1,4 +1,13 @@
 steps:
+  - name: node:10.15.1
+    entrypoint: npm
+    args: ["install"]
+  - name: node:10.15.1
+    entrypoint: npm
+    args: ["run", "create-env"]
+    env:
+      - "YOUTUBE_API_KEY=${_YOUTUBE_API_KEY}"
+      - "DISCORD_BOT_TOKEN=${_DISCORD_BOT_TOKEN}"
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["app", "deploy"]
 timeout: "1600s"
