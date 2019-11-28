@@ -1,5 +1,5 @@
 import { Client, StreamDispatcher } from 'discord.js';
-import ytdl from 'ytdl-core';
+import ytdl from 'ytdl-core-discord';
 import search from 'youtube-search';
 
 require('dotenv').config();
@@ -43,23 +43,29 @@ client.on('message', (msg) => {
           .join()
           .then((connection) => {
             if (query != null) {
-              search(query, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, (err, results) => {
-                if (err) {
-                  msg.reply(err.message);
-                  return;
-                }
-                if (results === undefined) {
-                  msg.reply('No matching results found');
-                  return;
-                }
-                const video = results[0];
-                msg.reply(`Trying to play "${video.title}"`);
-                dispatcher = connection.playStream(ytdl(video.link, { quality: 'highestaudio' }));
-                dispatcher.setVolume(0.5);
-                dispatcher.on('start', () => msg.channel.send(`Now Playing: ${video.title}`));
+              search(
+                query,
+                { maxResults: 1, key: process.env.YOUTUBE_API_KEY },
+                async (err, results) => {
+                  if (err) {
+                    msg.reply(err.message);
+                    return;
+                  }
+                  if (results === undefined) {
+                    msg.reply('No matching results found');
+                    return;
+                  }
+                  const video = results[0];
+                  msg.reply(`Searching for "${video.title}"`);
+                  dispatcher = connection.playOpusStream(await ytdl(video.link));
+                  dispatcher.setVolume(0.5);
+                  dispatcher.on('start', () => msg.channel.send(`Now Playing: ${video.title}`));
+                  dispatcher.on('end', () => msg.channel.send('Finished playing'));
+                  dispatcher.on('error', (e) => console.log('Error: ', e));
 
-                connection.on('disconnect', () => dispatcher.end());
-              });
+                  connection.on('disconnect', () => dispatcher.end());
+                },
+              );
             } else msg.reply('Please give something for me to play.');
           })
           .catch((e) => msg.reply('Error: ' + e));
