@@ -31,7 +31,8 @@
         "tslint": "^5.20.0",
         "typescript": "^3.6.4",
         "youtube-search": "^1.1.4",
-        "ytdl": "^0.13.1"
+        "ytdl": "^0.13.1",
+        "ytdl-core-discord": "github:amishshah/ytdl-core-discord"
     },
     "devDependencies": {
         "@types/express": "^4.17.1",
