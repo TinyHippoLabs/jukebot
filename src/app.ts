@@ -57,7 +57,11 @@ client.on('message', (msg) => {
                   }
                   const video = results[0];
                   msg.reply(`Searching for "${video.title}"`);
-                  dispatcher = connection.playOpusStream(await ytdl(video.link));
+                  try {
+                    dispatcher = connection.playOpusStream(await ytdl(video.link));
+                  } catch (err) {
+                    msg.channel.send('ytdl error: ' + err);
+                  }
                   dispatcher.setVolume(0.5);
                   dispatcher.on('start', () => msg.channel.send(`Now Playing: ${video.title}`));
                   dispatcher.on('end', () => msg.channel.send('Finished playing'));
